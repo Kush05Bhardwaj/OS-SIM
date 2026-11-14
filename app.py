@@ -25,6 +25,8 @@ from core.config import (
     ALGORITHM_CATEGORIES,
 )
 from dashboard.cpu_view import render_cpu_view
+from dashboard.memory_view import render_memory_view
+from dashboard.paging_view import render_paging_view
 
 # Configure Streamlit page
 st.set_page_config(
@@ -164,15 +166,9 @@ def main():
     elif selected_page == "⚡ CPU Scheduling":
         render_cpu_view()
     elif selected_page == "🧠 Memory Management":
-        render_placeholder(
-            "🧠 Contiguous Memory Allocation Visualizer",
-            "Simulate dynamic partitions using First Fit, Best Fit, Worst Fit, and Next Fit, with compaction tracking.",
-        )
+        render_memory_view()
     elif selected_page == "📑 Page Replacement":
-        render_placeholder(
-            "📑 Page Replacement & Virtual Memory Simulator",
-            "Trace frame states and fault metrics across FIFO, LRU, Optimal, and Clock algorithms.",
-        )
+        render_paging_view()
     elif selected_page == "💽 Disk Scheduling":
         render_placeholder(
             "💽 Disk Arm Trajectory Visualizer",

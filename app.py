@@ -29,6 +29,7 @@ from dashboard.memory_view import render_memory_view
 from dashboard.paging_view import render_paging_view
 from dashboard.disk_view import render_disk_view
 from dashboard.system_view import render_system_view
+from dashboard.history_view import render_history_view
 
 # Configure Streamlit page
 st.set_page_config(
@@ -176,10 +177,7 @@ def main():
     elif selected_page == "🖥️ Live System Monitor":
         render_system_view()
     elif selected_page == "📊 Analytics & History":
-        render_placeholder(
-            "📊 Simulation History & Comparative Benchmarks",
-            "Query and export historical simulation outcomes and telemetry logs stored in SQLite.",
-        )
+        render_history_view()
 
 
 if __name__ == "__main__":

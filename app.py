@@ -24,6 +24,7 @@ from core.config import (
     UI_INITIAL_SIDEBAR_STATE,
     ALGORITHM_CATEGORIES,
 )
+from dashboard.cpu_view import render_cpu_view
 
 # Configure Streamlit page
 st.set_page_config(
@@ -161,10 +162,7 @@ def main():
     if selected_page == "🏠 Overview":
         render_overview()
     elif selected_page == "⚡ CPU Scheduling":
-        render_placeholder(
-            "⚡ CPU Scheduling Simulator",
-            "Interactive execution timeline, Gantt charts, and comparison of FCFS, SJF, Round Robin, Priority, and MLFQ.",
-        )
+        render_cpu_view()
     elif selected_page == "🧠 Memory Management":
         render_placeholder(
             "🧠 Contiguous Memory Allocation Visualizer",

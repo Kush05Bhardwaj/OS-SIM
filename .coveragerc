@@ -1,0 +1,12 @@
+[run]
+source = .
+omit =
+    venv/*
+    .venv/*
+    tests/*
+    dashboard/*_view.py
+    app.py
+
+[report]
+show_missing = True
+fail_under = 85

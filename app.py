@@ -27,6 +27,7 @@ from core.config import (
 from dashboard.cpu_view import render_cpu_view
 from dashboard.memory_view import render_memory_view
 from dashboard.paging_view import render_paging_view
+from dashboard.disk_view import render_disk_view
 
 # Configure Streamlit page
 st.set_page_config(
@@ -170,10 +171,7 @@ def main():
     elif selected_page == "📑 Page Replacement":
         render_paging_view()
     elif selected_page == "💽 Disk Scheduling":
-        render_placeholder(
-            "💽 Disk Arm Trajectory Visualizer",
-            "Evaluate total head movements and seek times across FCFS, SSTF, SCAN, C-SCAN, LOOK, and C-LOOK.",
-        )
+        render_disk_view()
     elif selected_page == "🖥️ Live System Monitor":
         render_placeholder(
             "🖥️ Real-time Linux System Telemetry",

@@ -28,6 +28,7 @@ from dashboard.cpu_view import render_cpu_view
 from dashboard.memory_view import render_memory_view
 from dashboard.paging_view import render_paging_view
 from dashboard.disk_view import render_disk_view
+from dashboard.deadlock_view import render_deadlock_view
 from dashboard.system_view import render_system_view
 from dashboard.history_view import render_history_view
 
@@ -80,6 +81,7 @@ def render_sidebar():
             "🧠 Memory Management",
             "📑 Page Replacement",
             "💽 Disk Scheduling",
+            "🔒 Deadlock Management",
             "🖥️ Live System Monitor",
             "📊 Analytics & History",
         ],
@@ -106,7 +108,7 @@ def render_overview():
     st.markdown(f"<div class='main-header'>{APP_NAME}</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='sub-header'>{APP_TAGLINE}</div>", unsafe_allow_html=True)
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.metric("CPU Schedulers", "6 Algorithms", "FCFS, SJF, RR...")
     with col2:
@@ -115,6 +117,8 @@ def render_overview():
         st.metric("Page Replacement", "4 Algorithms", "LRU, Optimal, FIFO...")
     with col4:
         st.metric("Disk Schedulers", "6 Algorithms", "SCAN, SSTF, LOOK...")
+    with col5:
+        st.metric("Deadlock Avoidance", "Banker's & WFG", "Safety & Detection")
 
     st.divider()
 
@@ -129,6 +133,7 @@ def render_overview():
             - **Contiguous Memory**: First/Best/Worst/Next Fit with internal/external fragmentation indicators and dynamic compaction.
             - **Virtual Memory & Paging**: Step-by-step frame matrix visualizer, hit/fault ratio graphs, and Belady's Anomaly tests.
             - **Disk Head Scheduling**: Interactive 2D cylinder trajectory plots and seek travel comparisons.
+            - **Deadlock Management**: Dijkstra's Banker's algorithm, dynamic request validation, and Wait-For Graph (WFG) cycle detection.
             """
         )
 
@@ -174,6 +179,8 @@ def main():
         render_paging_view()
     elif selected_page == "💽 Disk Scheduling":
         render_disk_view()
+    elif selected_page == "🔒 Deadlock Management":
+        render_deadlock_view()
     elif selected_page == "🖥️ Live System Monitor":
         render_system_view()
     elif selected_page == "📊 Analytics & History":

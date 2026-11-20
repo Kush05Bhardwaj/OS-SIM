@@ -20,6 +20,7 @@ flowchart TD
         MemView["dashboard/memory_view.py"]
         PageView["dashboard/paging_view.py"]
         DiskView["dashboard/disk_view.py"]
+        DeadlockView["dashboard/deadlock_view.py"]
         LiveView["dashboard/system_view.py"]
         HistoryView["dashboard/history_view.py"]
         GanttComp["dashboard/components/gantt.py"]
@@ -30,6 +31,7 @@ flowchart TD
         MemAlloc["algorithms/memory/ (First, Best, Worst, Next Fit)"]
         PageRepl["algorithms/paging/ (FIFO, LRU, Optimal, Clock)"]
         DiskSched["algorithms/disk/ (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK)"]
+        DeadlockMgmt["algorithms/deadlock/ (Banker's Avoidance, WFG Detection)"]
     end
 
     subgraph Telemetry ["Linux Telemetry & Integration Tier"]
@@ -46,11 +48,12 @@ flowchart TD
     end
 
     Browser <--> Presentation
-    App --> CPUView & MemView & PageView & DiskView & LiveView & HistoryView
+    App --> CPUView & MemView & PageView & DiskView & DeadlockView & LiveView & HistoryView
     CPUView --> CPUSched & GanttComp
     MemView --> MemAlloc
     PageView --> PageRepl
     DiskView --> DiskSched
+    DeadlockView --> DeadlockMgmt
     LiveView --> BashExec --> BashScripts
     BashExec --> PydanticModels --> CircBuffer
     HistoryView --> DBManager --> DBFile
@@ -111,6 +114,10 @@ sequenceDiagram
 
 ### Disk Scheduling Engine
 - **Traversals**: FCFS, SSTF, SCAN, C-SCAN, LOOK, and C-LOOK with customizable boundary limits and directional sweeps.
+
+### Deadlock Management Engine
+- **Deadlock Avoidance**: Dijkstra's Banker's Algorithm with multiple resource instances, Need matrix evaluation ($Need = Max - Allocation$), safety verification, and interactive dynamic resource-request safety checks.
+- **Deadlock Detection**: Multi-instance matrix reduction algorithm and Wait-For Graph (WFG) directed cycle detection.
 
 ---
 

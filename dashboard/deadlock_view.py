@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 from algorithms.deadlock.base import DeadlockState
 from algorithms.deadlock.banker import BankerAlgorithm
 from algorithms.deadlock.detection import DeadlockDetector
+from core.logger import activity_logger
 
 
 PRESETS: Dict[str, Dict] = {
@@ -158,14 +159,13 @@ def build_wfg_figure(processes: List[str], edges: List[Tuple[str, str]], deadloc
 
 def render_deadlock_view() -> None:
     """Renders the Deadlock Management dashboard page."""
-    st.header("🔒 Deadlock Management & Avoidance")
-    st.markdown(
-        "Explore **Dijkstra's Banker's Algorithm** for deadlock avoidance and **Resource Allocation Graph (RAG) / Wait-For Graph (WFG)** cycle detection."
+    st.title("Deadlock Avoidance & Detection")
+    st.caption(
+        "Evaluate Dijkstra's Banker's Algorithm for deadlock avoidance, test dynamic "
+        "resource-requests, and detect cycles in Wait-For Graphs (WFG)."
     )
 
-    # Preset selection
-    st.sidebar.subheader("⚙️ Scenario Selection")
-    chosen_preset = st.sidebar.selectbox("Load Scenario Preset", list(PRESETS.keys()), index=0)
+    chosen_preset = st.selectbox("Scenario Preset", list(PRESETS.keys()), index=0)
 
     cfg = copy.deepcopy(PRESETS[chosen_preset])
     processes = cfg["processes"]
@@ -179,10 +179,10 @@ def render_deadlock_view() -> None:
         available=cfg["available"],
     )
 
-    tab_banker, tab_detect = st.tabs(["🛡️ Banker's Algorithm (Avoidance)", "🔍 Deadlock Detection & Graph"])
+    tab_banker, tab_detect = st.tabs(["Banker's Algorithm (Avoidance)", "Wait-For Graph (Detection)"])
 
     with tab_banker:
-        st.subheader("📊 System Matrices & Available Resources")
+        st.subheader("System Matrices & Available Resources")
 
         col_avail, col_alloc, col_max, col_need = st.columns(4)
 
@@ -210,6 +210,7 @@ def render_deadlock_view() -> None:
 
         banker = BankerAlgorithm(state)
         safety_result = banker.check_safety()
+        activity_logger.success("Deadlock", f"Checked Banker safety: safe={safety_result.is_safe}")
 
         st.subheader("🚦 Safety Verification")
         if safety_result.is_safe:

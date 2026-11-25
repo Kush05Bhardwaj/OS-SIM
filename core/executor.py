@@ -22,6 +22,7 @@ from core.config import (
     BASH_DEFAULT_TIMEOUT,
     BASH_ALLOWED_SCRIPTS,
 )
+from core.logger import activity_logger
 
 
 @dataclass
@@ -118,6 +119,7 @@ class BashExecutor:
         if not self.is_bash_available():
             mock_data = self._generate_mock_data(script_name, args)
             elapsed_ms = (time.perf_counter() - start_time) * 1000
+            activity_logger.info("BashExecutor", f"Executed mock fallback for {script_name}", {"args": args, "ms": elapsed_ms})
             return ExecutionResult(
                 success=True,
                 return_code=0,
@@ -131,6 +133,7 @@ class BashExecutor:
             script_path = self.validate_script(script_name)
         except (ValueError, PermissionError, FileNotFoundError) as e:
             elapsed_ms = (time.perf_counter() - start_time) * 1000
+            activity_logger.error("BashExecutor", f"Validation failed for {script_name}: {e}")
             return ExecutionResult(
                 success=False,
                 return_code=-1,
@@ -154,6 +157,7 @@ class BashExecutor:
             stderr_str = proc.stderr.strip()
 
             if proc.returncode != 0:
+                activity_logger.warning("BashExecutor", f"Script {script_name} returned non-zero code {proc.returncode}")
                 return ExecutionResult(
                     success=False,
                     return_code=proc.returncode,
@@ -168,6 +172,7 @@ class BashExecutor:
             try:
                 parsed = json.loads(stdout_str)
             except json.JSONDecodeError as jde:
+                activity_logger.error("BashExecutor", f"JSON decode error in {script_name}")
                 return ExecutionResult(
                     success=False,
                     return_code=proc.returncode,
@@ -177,6 +182,7 @@ class BashExecutor:
                     execution_time_ms=elapsed_ms,
                 )
 
+            activity_logger.success("BashExecutor", f"Successfully executed {script_name}", {"ms": round(elapsed_ms, 2)})
             return ExecutionResult(
                 success=True,
                 return_code=0,
@@ -189,6 +195,7 @@ class BashExecutor:
 
         except subprocess.TimeoutExpired:
             elapsed_ms = (time.perf_counter() - start_time) * 1000
+            activity_logger.error("BashExecutor", f"Timeout ({effective_timeout}s) executing {script_name}")
             return ExecutionResult(
                 success=False,
                 return_code=-2,
@@ -197,6 +204,7 @@ class BashExecutor:
             )
         except Exception as ex:
             elapsed_ms = (time.perf_counter() - start_time) * 1000
+            activity_logger.error("BashExecutor", f"Unexpected error executing {script_name}: {ex}")
             return ExecutionResult(
                 success=False,
                 return_code=-3,

@@ -1,0 +1,92 @@
+{
+  "cpu_scheduling": {
+    "FCFS": {
+      "avg_waiting_time": 5.75,
+      "avg_turnaround_time": 11.25,
+      "cpu_utilization": 100.0
+    },
+    "SJF": {
+      "avg_waiting_time": 5.25,
+      "avg_turnaround_time": 10.75,
+      "cpu_utilization": 100.0
+    },
+    "RR_q2": {
+      "avg_waiting_time": 9.75,
+      "avg_turnaround_time": 15.25,
+      "cpu_utilization": 100.0
+    }
+  },
+  "disk_scheduling": {
+    "FCFS": {
+      "total_movement": 640,
+      "seek_sequence": [
+        53,
+        98,
+        183,
+        37,
+        122,
+        14,
+        124,
+        65,
+        67
+      ]
+    },
+    "SSTF": {
+      "total_movement": 236,
+      "seek_sequence": [
+        53,
+        65,
+        67,
+        37,
+        14,
+        98,
+        122,
+        124,
+        183
+      ]
+    },
+    "SCAN": {
+      "total_movement": 331,
+      "seek_sequence": [
+        53,
+        65,
+        67,
+        98,
+        122,
+        124,
+        183,
+        199,
+        37,
+        14
+      ]
+    }
+  },
+  "page_replacement": {
+    "FIFO_3frames": {
+      "faults": 15,
+      "hits": 5,
+      "fault_rate": 75.0
+    },
+    "LRU_3frames": {
+      "faults": 12,
+      "hits": 8,
+      "fault_rate": 60.0
+    },
+    "OPT_3frames": {
+      "faults": 9,
+      "hits": 11,
+      "fault_rate": 45.0
+    }
+  },
+  "deadlock_management": {
+    "is_safe": true,
+    "safe_sequence": [
+      "P1",
+      "P3",
+      "P0",
+      "P2",
+      "P4"
+    ],
+    "step_count": 5
+  }
+}

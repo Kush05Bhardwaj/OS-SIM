@@ -22,6 +22,7 @@ from algorithms.cpu.metrics import (
     compare_all_schedulers,
 )
 from dashboard.components.gantt import build_gantt_chart, build_comparison_barchart
+from core.logger import activity_logger
 
 PRESETS: Dict[str, List[Dict[str, Any]]] = {
     "Standard Mix": [
@@ -47,18 +48,18 @@ PRESETS: Dict[str, List[Dict[str, Any]]] = {
 
 def render_cpu_view():
     """Renders the comprehensive CPU scheduling simulator dashboard."""
-    st.title("⚡ Interactive CPU Scheduling Simulator")
-    st.markdown(
-        "Configure process burst and arrival parameters, inspect execution timelines, "
+    st.title("CPU Scheduling Laboratory")
+    st.caption(
+        "Configure process arrival and burst parameters, inspect Gantt execution strips, "
         "step through CPU cycles, and benchmark algorithms against one another."
     )
 
-    # Sidebar / Top level Configuration
+    # Top level Configuration
     col_preset, col_algo = st.columns([1, 1])
 
     with col_preset:
         preset_choice = st.selectbox(
-            "📋 Scenario Preset",
+            "Scenario Preset",
             ["Custom Input"] + list(PRESETS.keys()),
             index=1,
             help="Choose a pre-configured OS workload scenario or input your own.",
@@ -66,7 +67,7 @@ def render_cpu_view():
 
     with col_algo:
         algo_choice = st.selectbox(
-            "⚙️ Scheduling Algorithm",
+            "Scheduling Algorithm",
             [
                 "First-Come, First-Served (FCFS)",
                 "Shortest Job First (SJF - Non-Preemptive)",
@@ -106,7 +107,7 @@ def render_cpu_view():
             )
         st.session_state.last_preset = preset_choice
 
-    st.subheader("📝 Process Workload Configuration")
+    st.subheader("Process Workload Configuration")
     edited_df = st.data_editor(
         st.session_state.cpu_process_data,
         num_rows="dynamic",
@@ -165,39 +166,41 @@ def render_cpu_view():
         scheduler = FCFSScheduler()
         res = scheduler.schedule(processes)
 
+    activity_logger.success("CPU", f"Simulated {len(processes)} processes with {res.algorithm_name}")
+
     # Render Tabs
     tab_timeline, tab_playback, tab_comparison = st.tabs(
         [
-            "📊 Gantt Chart & Metrics",
-            "⏯️ Step-by-Step Playback",
-            "🏆 Multi-Algorithm Comparison",
+            "Execution Timeline & Metrics",
+            "Cycle Step & Ready Queue",
+            "Algorithm Leaderboard",
         ]
     )
 
     with tab_timeline:
         # Key Performance Metrics
         m1, m2, m3, m4, m5 = st.columns(5)
-        m1.metric("Avg Waiting Time", f"{res.avg_waiting_time} units")
-        m2.metric("Avg Turnaround Time", f"{res.avg_turnaround_time} units")
-        m3.metric("Avg Response Time", f"{res.avg_response_time} units")
+        m1.metric("Avg Waiting Time", f"{res.avg_waiting_time} ms")
+        m2.metric("Avg Turnaround", f"{res.avg_turnaround_time} ms")
+        m3.metric("Avg Response Time", f"{res.avg_response_time} ms")
         m4.metric("CPU Utilization", f"{res.cpu_utilization}%")
-        m5.metric("Throughput", f"{res.throughput} proc/unit")
+        m5.metric("Throughput", f"{res.throughput} p/t")
 
         # Gantt Chart
         fig = build_gantt_chart(res)
         st.plotly_chart(fig, use_container_width=True)
 
         # Process Metrics Table
-        st.subheader("📋 Per-Process Execution Statistics")
+        st.subheader("Process Execution Statistics")
         proc_df = extract_process_metrics_dataframe(res)
         st.dataframe(proc_df, use_container_width=True, hide_index=True)
 
     with tab_playback:
-        st.subheader("⏯️ Simulation Playback & Cycle Inspector")
+        st.subheader("Simulation Cycle Inspector")
         total_time = res.total_time
 
         if total_time > 0:
-            step_time = st.slider("Simulation Time Tick", min_value=0, max_value=total_time, value=0)
+            step_time = st.slider("Simulation Clock Tick", min_value=0, max_value=total_time, value=0)
 
             # Find active slice at step_time
             active_pid = "IDLE"
@@ -208,11 +211,11 @@ def render_cpu_view():
 
             c1, c2, c3 = st.columns(3)
             with c1:
-                st.metric("Current Time Tick", f"t = {step_time}")
+                st.metric("Clock Tick", f"t = {step_time}")
             with c2:
                 st.metric("CPU State", "BUSY" if active_pid != "IDLE" else "IDLE")
             with c3:
-                st.metric("Running Process", active_pid)
+                st.metric("Active Process", active_pid)
 
             st.divider()
 
@@ -232,30 +235,30 @@ def render_cpu_view():
                     {
                         "PID": p.pid,
                         "Arrival": p.arrival_time,
-                        "Total Burst": p.burst_time,
-                        "State at t": state,
+                        "Burst": p.burst_time,
+                        "State at Tick": state,
                         "Completion Time": p.completion_time if step_time >= p.completion_time else "-",
                     }
                 )
 
-            st.table(pd.DataFrame(status_records))
+            st.dataframe(pd.DataFrame(status_records), use_container_width=True, hide_index=True)
         else:
             st.info("No timeline slices to inspect.")
 
     with tab_comparison:
-        st.subheader("🏆 Multi-Algorithm Efficiency Comparison")
+        st.subheader("Algorithm Efficiency Comparison")
         st.caption(
-            "Compares all 7 scheduling algorithms on the exact same input workload configured above."
+            "Benchmark comparison across all 7 schedulers using the configured workload."
         )
 
         comp_df = compare_all_schedulers(processes, rr_quantum=rr_quantum, mlfq_q0=mlfq_q0, mlfq_q1=mlfq_q1)
 
         if not comp_df.empty:
             winner = comp_df.iloc[0]
-            st.success(
-                f"🥇 Top Performer on this workload: **{winner['Algorithm']}** with "
-                f"Lowest Average Waiting Time = **{winner['Avg Waiting Time']}** units and "
-                f"Average Turnaround Time = **{winner['Avg Turnaround Time']}** units."
+            st.info(
+                f"Optimal Strategy: **{winner['Algorithm']}** "
+                f"(Avg Waiting: **{winner['Avg Waiting Time']} units**, "
+                f"Avg Turnaround: **{winner['Avg Turnaround Time']} units**)"
             )
 
             barchart = build_comparison_barchart(comp_df)

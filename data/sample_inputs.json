@@ -1,0 +1,77 @@
+{
+  "cpu_scheduling": {
+    "standard_workload": [
+      {"pid": "P1", "arrival_time": 0, "burst_time": 5, "priority": 2},
+      {"pid": "P2", "arrival_time": 1, "burst_time": 3, "priority": 1},
+      {"pid": "P3", "arrival_time": 2, "burst_time": 8, "priority": 4},
+      {"pid": "P4", "arrival_time": 3, "burst_time": 6, "priority": 3}
+    ],
+    "convoy_effect": [
+      {"pid": "P1", "arrival_time": 0, "burst_time": 24, "priority": 1},
+      {"pid": "P2", "arrival_time": 1, "burst_time": 3, "priority": 2},
+      {"pid": "P3", "arrival_time": 2, "burst_time": 3, "priority": 3}
+    ],
+    "high_concurrency": [
+      {"pid": "P1", "arrival_time": 0, "burst_time": 2, "priority": 3},
+      {"pid": "P2", "arrival_time": 0, "burst_time": 4, "priority": 2},
+      {"pid": "P3", "arrival_time": 0, "burst_time": 1, "priority": 1},
+      {"pid": "P4", "arrival_time": 0, "burst_time": 3, "priority": 4},
+      {"pid": "P5", "arrival_time": 0, "burst_time": 5, "priority": 5}
+    ]
+  },
+  "memory_allocation": {
+    "standard_partitions": [
+      {"pid": null, "size": 100, "is_allocated": false},
+      {"pid": null, "size": 500, "is_allocated": false},
+      {"pid": null, "size": 200, "is_allocated": false},
+      {"pid": null, "size": 300, "is_allocated": false},
+      {"pid": null, "size": 600, "is_allocated": false}
+    ],
+    "allocation_requests": [
+      {"pid": "P1", "size": 212},
+      {"pid": "P2", "size": 417},
+      {"pid": "P3", "size": 112},
+      {"pid": "P4", "size": 426}
+    ]
+  },
+  "page_replacement": {
+    "standard_textbook_trace": [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1],
+    "belady_anomaly_trace": [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5],
+    "loop_locality_trace": [1, 2, 3, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3]
+  },
+  "disk_scheduling": {
+    "standard_cylinders": {
+      "requests": [98, 183, 37, 122, 14, 124, 65, 67],
+      "initial_head": 53,
+      "max_cylinder": 199,
+      "direction": "RIGHT"
+    },
+    "edge_cases": {
+      "requests": [0, 199, 10, 190, 20, 180],
+      "initial_head": 100,
+      "max_cylinder": 199,
+      "direction": "RIGHT"
+    }
+  },
+  "deadlock_management": {
+    "silberschatz_safe_state": {
+      "processes": ["P0", "P1", "P2", "P3", "P4"],
+      "resources": ["A", "B", "C"],
+      "allocation": {
+        "P0": {"A": 0, "B": 1, "C": 0},
+        "P1": {"A": 2, "B": 0, "C": 0},
+        "P2": {"A": 3, "B": 0, "C": 2},
+        "P3": {"A": 2, "B": 1, "C": 1},
+        "P4": {"A": 0, "B": 0, "C": 2}
+      },
+      "max_matrix": {
+        "P0": {"A": 7, "B": 5, "C": 3},
+        "P1": {"A": 3, "B": 2, "C": 2},
+        "P2": {"A": 9, "B": 0, "C": 2},
+        "P3": {"A": 2, "B": 2, "C": 2},
+        "P4": {"A": 4, "B": 3, "C": 3}
+      },
+      "available": {"A": 3, "B": 3, "C": 2}
+    }
+  }
+}

@@ -50,10 +50,10 @@ def create_gauge(title: str, value: float, max_val: float = 100.0, color: str = 
 
 def render_system_view():
     """Renders the real-time Linux telemetry dashboard."""
-    st.title("🖥️ Real-Time Linux System Telemetry")
-    st.markdown(
-        "Live host telemetry collected via non-destructive Bash utilities and Python subprocess integration. "
-        "Provides real-time gauges, time-series streaming trends, partition meters, and process inspection."
+    st.title("Host Telemetry & Subprocess Monitor")
+    st.caption(
+        "Live host telemetry gathered via non-destructive POSIX shell scripts and safe Python subprocess execution. "
+        "Provides real-time gauges, time-series streaming metrics, partition meters, and process inspection."
     )
 
     if "telemetry_buffer" not in st.session_state:
@@ -65,14 +65,15 @@ def render_system_view():
     buffer: TelemetryBuffer = st.session_state.telemetry_buffer
 
     # Controls Header
-    col_refresh, col_mode, col_time = st.columns([1, 1.5, 1])
+    col_refresh, col_mode = st.columns([1, 2])
     with col_refresh:
-        refresh_clicked = st.button("🔄 Poll Latest Metrics", use_container_width=True)
+        refresh_clicked = st.button("Poll Metrics", use_container_width=True)
     with col_mode:
         is_live = executor.is_bash_available()
-        st.caption(
-            "🟢 **Native Bash Engine Active**" if is_live else "🟡 **Cross-Platform Mock Engine Active (psutil)**"
-        )
+        if is_live:
+            st.markdown('<span class="status-tag status-tag-active" style="margin-top: 6px;">● Native/Git Bash Subprocess Active</span>', unsafe_allow_html=True)
+        else:
+            st.markdown('<span class="status-tag status-tag-standby" style="margin-top: 6px;">○ Cross-Platform psutil Fallback</span>', unsafe_allow_html=True)
 
     # Collect data
     sys_res = executor.execute("system_info.sh")
@@ -105,17 +106,17 @@ def render_system_view():
 
     # System Info Header Banner
     with st.container():
-        st.subheader("ℹ️ Host Information")
+        st.subheader("Host Specifications")
         i1, i2, i3, i4 = st.columns(4)
         i1.metric("Hostname", sys_data.get("hostname", "unknown"))
         i2.metric("Operating System", sys_data.get("os_name", "Linux"))
-        i3.metric("Kernel / Release", sys_data.get("kernel_release", "unknown"))
+        i3.metric("Kernel Release", sys_data.get("kernel_release", "unknown"))
         i4.metric("Uptime", sys_data.get("uptime_human", "unknown"))
 
     st.divider()
 
     # Gauges Row
-    st.subheader("⚡ Live Resource Utilization")
+    st.subheader("Resource Utilization")
     cpu_info = res_data.get("cpu", {})
     mem_info = res_data.get("memory", {})
     swap_info = res_data.get("swap", {})
@@ -137,7 +138,7 @@ def render_system_view():
 
     # Time-Series Real-Time Trendline
     st.divider()
-    st.subheader("📈 Telemetry Time-Series History (Last 60s)")
+    st.subheader("Telemetry Time-Series (Last 60s)")
     df_history = buffer.to_dataframe()
 
     if not df_history.empty and len(df_history) >= 1:
@@ -175,7 +176,7 @@ def render_system_view():
 
     # Disk Storage Partitions
     st.divider()
-    st.subheader("💾 Storage Partitions")
+    st.subheader("Storage Partitions")
     partitions = disk_data.get("partitions", [])
     if partitions:
         d_cols = st.columns(min(len(partitions), 3))
@@ -192,11 +193,11 @@ def render_system_view():
 
     # Active Process Table
     st.divider()
-    st.subheader("📋 Active Process Table")
+    st.subheader("Active Process Table")
     procs = proc_data.get("processes", [])
     if procs:
         proc_df = pd.DataFrame(procs)
-        search_term = st.text_input("🔍 Filter by Process Name / User", "")
+        search_term = st.text_input("Filter by Process Name / User", "")
         if search_term:
             proc_df = proc_df[
                 proc_df["name"].str.contains(search_term, case=False, na=False)
@@ -207,5 +208,5 @@ def render_system_view():
         st.info("No active process records.")
 
     # Health Check Expander
-    with st.expander("🩺 Subsystem Health & Diagnostics", expanded=False):
-        st.write(health_data)
+    with st.expander("Subsystem Health & Diagnostics", expanded=False):
+        st.json(health_data)

@@ -16,17 +16,17 @@ from analytics.export import (
 
 def render_history_view():
     """Renders the historical persistence and benchmark reports view."""
-    st.title("📊 Simulation History & Comparative Benchmarks")
-    st.markdown(
+    st.title("Historical Database & Analytics")
+    st.caption(
         "Inspect historical simulation traces saved to SQLite, analyze longitudinal trends, "
         "and export simulation benchmarks and telemetry archives to CSV or JSON formats."
     )
 
     tab_runs, tab_telemetry, tab_maint = st.tabs(
         [
-            "📜 Simulation Run Records",
-            "📈 Telemetry Snapshot Archive",
-            "⚙️ Database Operations",
+            "Simulation Run Records",
+            "Telemetry Archive",
+            "Database Maintenance",
         ]
     )
 

@@ -17,6 +17,7 @@ from algorithms.disk.schedulers import (
     CLOOKDiskScheduler,
 )
 from algorithms.disk.base import DiskScheduleResult
+from core.logger import activity_logger
 
 DISK_PRESETS: Dict[str, Dict[str, Any]] = {
     "Standard Textbook Sequence": {
@@ -85,18 +86,18 @@ def build_trajectory_figure(results: List[DiskScheduleResult], cylinder_max: int
 
 def render_disk_view():
     """Renders the disk head visualizer dashboard."""
-    st.title("💽 Disk Arm Scheduling & Trajectory Visualizer")
-    st.markdown(
-        "Evaluate head movement efficiency, analyze seek curves, and compare FCFS, SSTF, SCAN, "
-        "C-SCAN, LOOK, and C-LOOK across customizable disk layouts."
+    st.title("Disk Head Scheduling & Trajectory")
+    st.caption(
+        "Evaluate seek arm efficiency, analyze 2D traversal curves, and compare FCFS, "
+        "SSTF, SCAN, C-SCAN, LOOK, and C-LOOK across customizable disk geometries."
     )
 
     c1, c2, c3, c4 = st.columns([1.2, 1, 0.8, 0.8])
     with c1:
-        preset_choice = st.selectbox("📋 Preset Scenario", list(DISK_PRESETS.keys()) + ["Custom"])
+        preset_choice = st.selectbox("Preset Scenario", list(DISK_PRESETS.keys()) + ["Custom"])
     with c2:
         algo_choice = st.selectbox(
-            "⚙️ View Mode",
+            "Scheduling Mode",
             [
                 "Compare All 6 Schedulers",
                 "First-Come, First-Served (FCFS)",
@@ -163,6 +164,8 @@ def render_disk_view():
             if name in algo_choice:
                 results.append(s.schedule(requests, initial_head=initial_head, direction=direction_choice, cylinder_max=cylinder_max))
                 break
+
+    activity_logger.success("Disk", f"Simulated {len(requests)} cylinders with {algo_choice}")
 
     # Metrics Row
     if len(results) == 1:

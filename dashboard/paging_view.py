@@ -15,6 +15,7 @@ from algorithms.paging.replacers import (
     ClockPageReplacer,
     detect_belady_anomaly,
 )
+from core.logger import activity_logger
 
 PAGING_PRESETS: Dict[str, List[int]] = {
     "Standard Textbook Sequence": [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1],
@@ -26,18 +27,18 @@ PAGING_PRESETS: Dict[str, List[int]] = {
 
 def render_paging_view():
     """Renders the virtual memory page replacement simulator."""
-    st.title("📑 Virtual Memory & Page Replacement Simulator")
-    st.markdown(
-        "Trace physical frame allocation step-by-step, evaluate page hit vs. fault rates, "
+    st.title("Virtual Memory & Page Replacement")
+    st.caption(
+        "Trace physical frame allocation, measure hit and fault distributions, "
         "and inspect Belady's Anomaly across FIFO, LRU, Optimal, and Clock algorithms."
     )
 
     c1, c2, c3 = st.columns([1.2, 1.2, 0.8])
     with c1:
-        preset_choice = st.selectbox("📋 Reference Sequence Preset", list(PAGING_PRESETS.keys()) + ["Custom"])
+        preset_choice = st.selectbox("Reference Sequence Preset", list(PAGING_PRESETS.keys()) + ["Custom"])
     with c2:
         algo_choice = st.selectbox(
-            "⚙️ Page Replacement Algorithm",
+            "Page Replacement Algorithm",
             [
                 "First-In First-Out (FIFO)",
                 "Least Recently Used (LRU)",
@@ -84,6 +85,7 @@ def render_paging_view():
         replacer = ClockPageReplacer()
 
     result = replacer.simulate(reference_string, num_frames=num_frames)
+    activity_logger.success("Paging", f"Simulated {len(reference_string)} refs with {algo_choice.split()[0]} ({result.page_faults} faults)")
 
     # Top Metrics
     m1, m2, m3, m4, m5 = st.columns(5)
@@ -98,7 +100,7 @@ def render_paging_view():
     col_matrix, col_chart = st.columns([2.5, 1.2])
 
     with col_matrix:
-        st.subheader("📊 Step-by-Step Frame Matrix Table")
+        st.subheader("Frame Allocation Matrix")
         # Build table representation
         matrix_dict: Dict[str, List[Any]] = {"Step": [f"#{s.step}" for s in result.steps]}
         matrix_dict["Page Ref"] = [str(s.page) for s in result.steps]
@@ -109,13 +111,13 @@ def render_paging_view():
                 for s in result.steps
             ]
 
-        matrix_dict["Result"] = ["🟢 HIT" if s.is_hit else f"🔴 FAULT ({s.victim_page} evicted)" if s.victim_page is not None else "🔴 FAULT (Empty)" for s in result.steps]
+        matrix_dict["Status"] = ["HIT" if s.is_hit else f"FAULT (evicted {s.victim_page})" if s.victim_page is not None else "FAULT (cold)" for s in result.steps]
 
         matrix_df = pd.DataFrame(matrix_dict)
         st.dataframe(matrix_df, use_container_width=True, hide_index=True)
 
     with col_chart:
-        st.subheader("🎯 Hit vs. Fault Ratio")
+        st.subheader("Hit vs Fault Ratio")
         pie_fig = go.Figure(
             data=[
                 go.Pie(
@@ -135,8 +137,8 @@ def render_paging_view():
 
     # Belady's Anomaly Inspector
     st.divider()
-    st.subheader("🔬 Belady's Anomaly Curve Analyzer")
-    st.caption("Inspect how page faults vary when increasing physical frames from 2 to 8.")
+    st.subheader("Belady Anomaly Analysis")
+    st.caption("Evaluates page fault variance across physical frame allocations from 2 to 8.")
 
     analysis = detect_belady_anomaly(reference_string, min_frames=2, max_frames=8)
     frame_counts = list(analysis["frame_faults"].keys())

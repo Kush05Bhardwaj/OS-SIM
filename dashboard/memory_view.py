@@ -9,6 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from algorithms.memory.base import MemoryPool, MemoryBlock
+from core.logger import activity_logger
 
 PALETTE = [
     "#2563EB", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6",
@@ -80,10 +81,10 @@ def render_memory_map_chart(pool: MemoryPool) -> go.Figure:
 
 def render_memory_view():
     """Renders the memory management dashboard."""
-    st.title("🧠 Contiguous Memory Management Visualizer")
-    st.markdown(
-        "Simulate dynamic contiguous memory partition allocation, observe internal and external "
-        "fragmentation in real-time, test coalescing on deallocation, and trigger memory compaction."
+    st.title("Physical Memory Manager")
+    st.caption(
+        "Dynamic contiguous partition allocation, real-time fragmentation monitoring, "
+        "adjacent hole coalescing, and address compaction."
     )
 
     if "memory_pool" not in st.session_state:
@@ -93,10 +94,9 @@ def render_memory_view():
 
     # Metrics Row
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Total Physical Memory", f"{pool.total_size} KB")
-    m2.metric("Allocated Memory", f"{pool.total_allocated_memory} KB", f"{(pool.total_allocated_memory / pool.total_size)*100:.1f}%")
+    m1.metric("Total Pool", f"{pool.total_size} KB")
+    m2.metric("Allocated", f"{pool.total_allocated_memory} KB", f"{(pool.total_allocated_memory / pool.total_size)*100:.1f}%")
     m3.metric("Free Memory", f"{pool.total_free_memory} KB", f"{pool.free_blocks_count} hole(s)")
-    ext_frag = pool.external_fragmentation(1)
     m4.metric("Free Partitions", f"{pool.free_blocks_count} Block(s)")
 
     st.divider()
@@ -109,7 +109,7 @@ def render_memory_view():
     col_alloc, col_dealloc, col_actions = st.columns([1.5, 1.2, 1])
 
     with col_alloc:
-        st.subheader("➕ Allocate Partition")
+        st.subheader("Allocate Partition")
         with st.form("alloc_form", clear_on_submit=True):
             pid_input = st.text_input("Process ID", value=f"P{len(pool.blocks)}")
             size_input = st.number_input("Requested Size (KB)", min_value=1, max_value=pool.total_size, value=150, step=10)
@@ -120,13 +120,15 @@ def render_memory_view():
                 strat_key = strat_input.lower().replace(" ", "_")
                 res = pool.allocate(pid_input.strip(), int(size_input), strategy=strat_key)
                 if res.success:
+                    activity_logger.success("Memory", f"Allocated {size_input} KB to {pid_input} ({strat_input})")
                     st.success(f"Allocated {size_input} KB to {pid_input} at address {res.allocated_block.start_address}.")
                     st.rerun()
                 else:
+                    activity_logger.warning("Memory", f"Allocation failed for {pid_input} ({size_input} KB): {res.error_message}")
                     st.error(f"Allocation Failed: {res.error_message}")
 
     with col_dealloc:
-        st.subheader("➖ Deallocate")
+        st.subheader("Deallocate Partition")
         allocated_pids = [b.pid for b in pool.blocks if b.is_allocated and b.pid]
         if allocated_pids:
             with st.form("dealloc_form"):
@@ -134,26 +136,29 @@ def render_memory_view():
                 submit_dealloc = st.form_submit_button("Free Memory & Coalesce", use_container_width=True)
                 if submit_dealloc:
                     if pool.deallocate(target_pid):
+                        activity_logger.success("Memory", f"Deallocated partition for {target_pid} and coalesced")
                         st.success(f"Released partition for {target_pid} and coalesced adjacent free holes.")
                         st.rerun()
         else:
             st.info("No processes currently allocated.")
 
     with col_actions:
-        st.subheader("🛠️ Operations")
-        if st.button("🗜️ Compact Memory", use_container_width=True, help="Shift active blocks to low addresses and consolidate free space."):
+        st.subheader("Memory Operations")
+        if st.button("Compact Memory", use_container_width=True, help="Shift active blocks to low addresses and consolidate free space."):
             pool.compact()
+            activity_logger.info("Memory", "Triggered dynamic memory compaction")
             st.success("Memory compacted into single continuous free block.")
             st.rerun()
 
-        if st.button("🔄 Reset Memory Pool", use_container_width=True):
+        if st.button("Reset Memory Pool", use_container_width=True):
             pool.reset()
+            activity_logger.info("Memory", "Reset physical memory pool")
             st.info("Memory pool reset.")
             st.rerun()
 
     # Partition Table
     st.divider()
-    st.subheader("📋 Memory Partition Table Inspector")
+    st.subheader("Partition Table Inspector")
     table_data = []
     for idx, b in enumerate(pool.blocks):
         table_data.append(

@@ -16,6 +16,7 @@ from core.models import (
     TelemetrySnapshot,
 )
 from core.buffer import TelemetryBuffer
+from core.logger import activity_logger, ActivityLogger
 
 __all__ = [
     "config",
@@ -35,4 +36,6 @@ __all__ = [
     "HealthCheckSnapshot",
     "TelemetrySnapshot",
     "TelemetryBuffer",
+    "activity_logger",
+    "ActivityLogger",
 ]

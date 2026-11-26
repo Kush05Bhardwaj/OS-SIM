@@ -19,18 +19,18 @@ def create_gauge(title: str, value: float, max_val: float = 100.0, color: str = 
         go.Indicator(
             mode="gauge+number",
             value=value,
-            title={"text": f"<b>{title}</b>", "font": {"size": 14, "color": "#1F2937"}},
-            number={"suffix": "%", "font": {"size": 22, "color": "#1F2937"}},
+            title={"text": f"<b>{title}</b>", "font": {"size": 14, "color": "#e2e8f0"}},
+            number={"suffix": "%", "font": {"size": 22, "color": "#e2e8f0"}},
             gauge={
-                "axis": {"range": [0, max_val], "tickwidth": 1, "tickcolor": "#9CA3AF"},
+                "axis": {"range": [0, max_val], "tickwidth": 1, "tickcolor": "#64748b"},
                 "bar": {"color": color},
-                "bgcolor": "#F3F4F6",
+                "bgcolor": "#1e293b",
                 "borderwidth": 1,
-                "bordercolor": "#E5E7EB",
+                "bordercolor": "#334155",
                 "steps": [
-                    {"range": [0, 60], "color": "#ECFDF5"},
-                    {"range": [60, 85], "color": "#FEF3C7"},
-                    {"range": [85, 100], "color": "#FEE2E2"},
+                    {"range": [0, 60], "color": "#12352d"},
+                    {"range": [60, 85], "color": "#49391a"},
+                    {"range": [85, 100], "color": "#4a2529"},
                 ],
                 "threshold": {
                     "line": {"color": "#DC2626", "width": 3},
@@ -43,7 +43,7 @@ def create_gauge(title: str, value: float, max_val: float = 100.0, color: str = 
     fig.update_layout(
         height=190,
         margin=dict(l=15, r=15, t=30, b=15),
-        paper_bgcolor="#FFFFFF",
+        paper_bgcolor="#0f172a",
     )
     return fig
 
@@ -167,8 +167,8 @@ def render_system_view():
             yaxis=dict(title="Utilization (%)", range=[0, 100]),
             xaxis=dict(title="Time"),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#0f172a",
+            paper_bgcolor="#0f172a",
         )
         st.plotly_chart(trend_fig, use_container_width=True)
     else:

@@ -76,7 +76,7 @@ def render_report_view():
         col_in, col_out = st.columns(2)
 
         with col_in:
-            st.markdown("#### 📥 Sample Inputs (`data/sample_inputs.json`)")
+            st.markdown("####  Sample Inputs (`data/sample_inputs.json`)")
             if sample_inputs_path.exists():
                 with open(sample_inputs_path, "r", encoding="utf-8") as f:
                     in_text = f.read()
@@ -89,7 +89,7 @@ def render_report_view():
                 )
 
         with col_out:
-            st.markdown("#### 📤 Verified Output Traces (`data/output_traces.json`)")
+            st.markdown("####  Verified Output Traces (`data/output_traces.json`)")
             if output_traces_path.exists():
                 with open(output_traces_path, "r", encoding="utf-8") as f:
                     out_text = f.read()
@@ -110,10 +110,10 @@ def render_report_view():
             """
             | Component | Requirement | Evidence Location | Verification Status |
             |---|---|---|---|
-            | **Phase 1** | System design, modular architecture, data structures, workflow | `docs/architecture.md`, `dashboard/design_view.py`, `core/models.py` | ✅ Verified (20/20) |
-            | **Phase 2** | Implementation of >= 3 OS modules in Python + Bash integration | `algorithms/cpu/`, `algorithms/memory/`, `algorithms/deadlock/`, `algorithms/disk/`, `bash/*.sh`, `core/executor.py` | ✅ Verified (20/20) |
-            | **Phase 3** | Common benchmark datasets, comparative tables/charts, technical insights | `dashboard/analysis_view.py`, `algorithms/cpu/metrics.py`, `data/sample_inputs.json` | ✅ Verified (20/20) |
-            | **Phase 4** | Testing quality, valid/boundary/stress tests, exception handling, logging | `tests/` (72 tests, 89.28% coverage), `core/logger.py`, `dashboard/reliability_view.py` | ✅ Verified (20/20) |
-            | **Phase 5** | Documentation, README, execution steps, sample inputs, output traces, report | `README.md`, `REPORT.md`, `data/output_traces.json`, `dashboard/report_view.py` | ✅ Verified (20/20) |
+            | **Phase 1** | System design, modular architecture, data structures, workflow | `docs/architecture.md`, `dashboard/design_view.py`, `core/models.py` |  Verified (20/20) |
+            | **Phase 2** | Implementation of >= 3 OS modules in Python + Bash integration | `algorithms/cpu/`, `algorithms/memory/`, `algorithms/deadlock/`, `algorithms/disk/`, `bash/*.sh`, `core/executor.py` |  Verified (20/20) |
+            | **Phase 3** | Common benchmark datasets, comparative tables/charts, technical insights | `dashboard/analysis_view.py`, `algorithms/cpu/metrics.py`, `data/sample_inputs.json` |  Verified (20/20) |
+            | **Phase 4** | Testing quality, valid/boundary/stress tests, exception handling, logging | `tests/` (72 tests, 89.28% coverage), `core/logger.py`, `dashboard/reliability_view.py` |  Verified (20/20) |
+            | **Phase 5** | Documentation, README, execution steps, sample inputs, output traces, report | `README.md`, `REPORT.md`, `data/output_traces.json`, `dashboard/report_view.py` |  Verified (20/20) |
             """
         )

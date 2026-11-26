@@ -73,13 +73,13 @@ def build_trajectory_figure(results: List[DiskScheduleResult], cylinder_max: int
 
     fig.update_layout(
         title="<b>Disk Head Trajectory Curve (Step vs. Cylinder)</b>",
-        xaxis=dict(title="Traversal Sequence Step", dtick=1, showgrid=True, gridcolor="#F3F4F6"),
-        yaxis=dict(title="Cylinder Position", range=[0, cylinder_max + 5], showgrid=True, gridcolor="#F3F4F6"),
+        xaxis=dict(title="Traversal Sequence Step", dtick=1, showgrid=True, gridcolor="#1e293b"),
+        yaxis=dict(title="Cylinder Position", range=[0, cylinder_max + 5], showgrid=True, gridcolor="#1e293b"),
         height=380,
         margin=dict(l=30, r=30, t=50, b=30),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#0f172a",
+        paper_bgcolor="#0f172a",
     )
     return fig
 
@@ -178,7 +178,7 @@ def render_disk_view():
     else:
         best_res = min(results, key=lambda r: r.total_head_movement)
         st.success(
-            f"🥇 Optimal Disk Trajectory: **{best_res.algorithm_name}** with "
+            f" Optimal Disk Trajectory: **{best_res.algorithm_name}** with "
             f"**{best_res.total_head_movement} cylinders** total head movement "
             f"({best_res.average_seek_distance} cyl/request)."
         )
@@ -190,7 +190,7 @@ def render_disk_view():
 
     # Comparison Leaderboard & Bar Chart (if multi mode)
     if len(results) > 1:
-        st.subheader("🏆 Disk Seek Comparison Leaderboard")
+        st.subheader(" Disk Seek Comparison Leaderboard")
         comp_records = []
         for r in results:
             comp_records.append(
@@ -224,15 +224,15 @@ def render_disk_view():
                 yaxis=dict(title="Cylinders"),
                 height=300,
                 margin=dict(l=20, r=20, t=40, b=80),
-                plot_bgcolor="#FFFFFF",
+                plot_bgcolor="#0f172a",
             )
             st.plotly_chart(bar_fig, use_container_width=True)
 
     # Traversal Order Trace Table
     st.divider()
-    st.subheader("📋 Traversal Step-by-Step Trace")
+    st.subheader(" Traversal Step-by-Step Trace")
     trace_cols = st.columns(len(results))
     for idx, r in enumerate(results):
         with trace_cols[idx % len(trace_cols)]:
             st.markdown(f"**{r.algorithm_name.split()[0]}** (`{r.total_head_movement} cyl`)")
-            st.caption(" ➔ ".join(map(str, r.seek_sequence)))
+            st.caption("  ".join(map(str, r.seek_sequence)))

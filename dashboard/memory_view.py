@@ -29,7 +29,7 @@ def render_memory_map_chart(pool: MemoryPool) -> go.Figure:
 
     for b in pool.blocks:
         is_alloc = b.is_allocated
-        color = color_map.get(b.pid, "#3B82F6") if is_alloc else "#E5E7EB"
+        color = color_map.get(b.pid, "#3B82F6") if is_alloc else "#334155"
         label = f"<b>{b.pid}</b><br>{b.size} KB" if is_alloc else f"FREE<br>{b.size} KB"
 
         fig.add_trace(
@@ -41,12 +41,12 @@ def render_memory_map_chart(pool: MemoryPool) -> go.Figure:
                 orientation="h",
                 marker=dict(
                     color=color,
-                    line=dict(color="#111827" if is_alloc else "#9CA3AF", width=1.5),
+                    line=dict(color="#e2e8f0" if is_alloc else "#64748b", width=1.5),
                 ),
                 text=label,
                 textposition="inside",
                 insidetextanchor="middle",
-                textfont=dict(color="#FFFFFF" if is_alloc else "#4B5563", size=11),
+                textfont=dict(color="#f8fafc" if is_alloc else "#cbd5e1", size=11),
                 customdata=[[b.pid or "Free", b.start_address, b.end_address, b.size]],
                 hovertemplate=(
                     "<b>Block:</b> %{customdata[0]}<br>"
@@ -61,20 +61,20 @@ def render_memory_map_chart(pool: MemoryPool) -> go.Figure:
         barmode="stack",
         title=dict(
             text="<b>Physical Memory Partition Layout (Address 0 to End)</b>",
-            font=dict(size=16, color="#1F2937"),
+            font=dict(size=16, color="#e2e8f0"),
         ),
         xaxis=dict(
             title="Physical Address (KB)",
             range=[0, pool.total_size],
             showgrid=True,
-            gridcolor="#F3F4F6",
+            gridcolor="#1e293b",
         ),
         yaxis=dict(showticklabels=False),
         height=200,
         margin=dict(l=20, r=20, t=40, b=30),
         legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="right", x=1),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#0f172a",
+        paper_bgcolor="#0f172a",
     )
     return fig
 

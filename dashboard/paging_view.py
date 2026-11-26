@@ -163,19 +163,19 @@ def render_paging_view():
             curve_fig.add_annotation(
                 x=pt["to_frames"],
                 y=pt["faults_after"],
-                text=f"⚠️ Belady Anomaly! ({pt['faults_before']} -> {pt['faults_after']} faults)",
+                text=f" Belady Anomaly! ({pt['faults_before']} -> {pt['faults_after']} faults)",
                 showarrow=True,
                 arrowhead=2,
                 arrowcolor="#DC2626",
                 font=dict(color="#DC2626", size=12),
             )
         st.warning(
-            f"⚠️ **Belady's Anomaly Confirmed**: Page faults increased when adding more frames! "
-            f"({analysis['anomaly_points'][0]['faults_before']} faults at {analysis['anomaly_points'][0]['from_frames']} frames ➔ "
+            f" **Belady's Anomaly Confirmed**: Page faults increased when adding more frames! "
+            f"({analysis['anomaly_points'][0]['faults_before']} faults at {analysis['anomaly_points'][0]['from_frames']} frames  "
             f"{analysis['anomaly_points'][0]['faults_after']} faults at {analysis['anomaly_points'][0]['to_frames']} frames)."
         )
     else:
-        st.success("✅ Standard behavior observed: Faults monotonically decrease or stay flat as frames increase.")
+        st.success(" Standard behavior observed: Faults monotonically decrease or stay flat as frames increase.")
 
     curve_fig.update_layout(
         title="<b>Page Faults vs. Physical Frame Allocation (FIFO)</b>",
@@ -183,7 +183,7 @@ def render_paging_view():
         yaxis=dict(title="Total Page Faults"),
         height=320,
         margin=dict(l=30, r=30, t=40, b=30),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#0f172a",
+        paper_bgcolor="#0f172a",
     )
     st.plotly_chart(curve_fig, use_container_width=True)

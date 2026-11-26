@@ -33,7 +33,7 @@ def build_gantt_chart(result: ScheduleResult) -> go.Figure:
         fig.add_annotation(
             text="No simulation trace available. Configure processes to run.",
             showarrow=False,
-            font=dict(size=14, color="#6B7280"),
+            font=dict(size=14, color="#94a3b8"),
         )
         fig.update_layout(
             xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
@@ -47,7 +47,7 @@ def build_gantt_chart(result: ScheduleResult) -> go.Figure:
     color_map: Dict[str, str] = {}
     for idx, pid in enumerate(unique_pids):
         color_map[pid] = PALETTE[idx % len(PALETTE)]
-    color_map["IDLE"] = "#E5E7EB"
+    color_map["IDLE"] = "#334155"
 
     # Add each slice as a horizontal bar
     # Tracking legend items so each PID appears once in the legend
@@ -55,7 +55,7 @@ def build_gantt_chart(result: ScheduleResult) -> go.Figure:
 
     for s in result.timeline:
         is_idle = s.pid == "IDLE" or s.state == "IDLE"
-        color = color_map.get(s.pid, "#9CA3AF")
+        color = color_map.get(s.pid, "#64748b")
         show_legend = s.pid not in seen_in_legend and not is_idle
         if show_legend:
             seen_in_legend.add(s.pid)
@@ -69,12 +69,12 @@ def build_gantt_chart(result: ScheduleResult) -> go.Figure:
                 orientation="h",
                 marker=dict(
                     color=color,
-                    line=dict(color="#111827" if not is_idle else "#9CA3AF", width=1.5),
+                    line=dict(color="#e2e8f0" if not is_idle else "#64748b", width=1.5),
                 ),
                 text=f"<b>{s.pid}</b>" if not is_idle else "IDLE",
                 textposition="inside",
                 insidetextanchor="middle",
-                textfont=dict(color="#FFFFFF" if not is_idle else "#4B5563", size=12),
+                textfont=dict(color="#f8fafc" if not is_idle else "#cbd5e1", size=12),
                 customdata=[[s.pid, s.end_time, s.duration]],
                 hovertemplate=(
                     "<b>Process:</b> %{customdata[0]}<br>"
@@ -92,16 +92,16 @@ def build_gantt_chart(result: ScheduleResult) -> go.Figure:
         barmode="stack",
         title=dict(
             text=f"<b>CPU Execution Timeline: {result.algorithm_name}</b>",
-            font=dict(size=16, color="#1F2937"),
+            font=dict(size=16, color="#e2e8f0"),
         ),
         xaxis=dict(
             title="Simulation Time Units",
             dtick=tick_step,
             range=[0, max(max_time + 1, 10)],
             showgrid=True,
-            gridcolor="#F3F4F6",
+            gridcolor="#1e293b",
             zeroline=True,
-            zerolinecolor="#9CA3AF",
+            zerolinecolor="#64748b",
         ),
         yaxis=dict(
             title="",
@@ -117,8 +117,8 @@ def build_gantt_chart(result: ScheduleResult) -> go.Figure:
             xanchor="right",
             x=1,
         ),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#0f172a",
+        paper_bgcolor="#0f172a",
     )
 
     return fig
@@ -159,7 +159,7 @@ def build_comparison_barchart(comparison_df: pd.DataFrame) -> go.Figure:
         barmode="group",
         title=dict(
             text="<b>Multi-Algorithm Efficiency Leaderboard</b>",
-            font=dict(size=16, color="#1F2937"),
+            font=dict(size=16, color="#e2e8f0"),
         ),
         xaxis=dict(
             title="Algorithm",
@@ -169,7 +169,7 @@ def build_comparison_barchart(comparison_df: pd.DataFrame) -> go.Figure:
         yaxis=dict(
             title="Time Units (Lower is Better)",
             showgrid=True,
-            gridcolor="#F3F4F6",
+            gridcolor="#1e293b",
         ),
         height=420,
         margin=dict(l=40, r=40, t=50, b=100),
@@ -180,8 +180,8 @@ def build_comparison_barchart(comparison_df: pd.DataFrame) -> go.Figure:
             xanchor="right",
             x=1,
         ),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#0f172a",
+        paper_bgcolor="#0f172a",
     )
 
     return fig

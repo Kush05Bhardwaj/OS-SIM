@@ -138,8 +138,8 @@ def render_analysis_view():
             height=380,
             margin=dict(l=30, r=30, t=50, b=80),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            plot_bgcolor="#FFFFFF",
-            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#0f172a",
+            paper_bgcolor="#0f172a",
         )
         st.plotly_chart(fig_cpu, use_container_width=True)
 
@@ -183,8 +183,8 @@ def render_analysis_view():
         disk_schedulers = [
             ("FCFS", FCFSDiskScheduler().schedule(reqs, init_h)),
             ("SSTF", SSTFDiskScheduler().schedule(reqs, init_h)),
-            ("SCAN", SCANDiskScheduler().schedule(reqs, init_h, direction=dir_val, max_cylinder=max_c)),
-            ("C-SCAN", CSCANDiskScheduler().schedule(reqs, init_h, direction=dir_val, max_cylinder=max_c)),
+            ("SCAN", SCANDiskScheduler().schedule(reqs, init_h, direction=dir_val, cylinder_max=max_c)),
+            ("C-SCAN", CSCANDiskScheduler().schedule(reqs, init_h, direction=dir_val, cylinder_max=max_c)),
             ("LOOK", LOOKDiskScheduler().schedule(reqs, init_h, direction=dir_val)),
             ("C-LOOK", CLOOKDiskScheduler().schedule(reqs, init_h, direction=dir_val)),
         ]
@@ -196,7 +196,7 @@ def render_analysis_view():
                     "Algorithm": name,
                     "Total Head Movement (Cylinders)": res.total_head_movement,
                     "Average Seek Length": round(res.total_head_movement / max(1, len(reqs)), 2),
-                    "Traversal Sequence": " ➔ ".join(map(str, res.seek_sequence[:8])) + ("..." if len(res.seek_sequence) > 8 else ""),
+                    "Traversal Sequence": "  ".join(map(str, res.seek_sequence[:8])) + ("..." if len(res.seek_sequence) > 8 else ""),
                 }
             )
 
@@ -224,13 +224,13 @@ def render_analysis_view():
                 yaxis=dict(title="Total Head Movement (Cylinders)"),
                 height=320,
                 margin=dict(l=30, r=30, t=50, b=40),
-                plot_bgcolor="#FFFFFF",
-                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#0f172a",
+                paper_bgcolor="#0f172a",
             )
             st.plotly_chart(fig_disk, use_container_width=True)
 
         best_disk = df_disk.iloc[0]
-        st.info(f"🏆 **Winner**: **{best_disk['Algorithm']}** incurred the minimal mechanical head movement of **{best_disk['Total Head Movement (Cylinders)']} cylinders**.")
+        st.info(f" **Winner**: **{best_disk['Algorithm']}** incurred the minimal mechanical head movement of **{best_disk['Total Head Movement (Cylinders)']} cylinders**.")
 
     # -------------------------------------------------------------
     # TAB 3: PAGE REPLACEMENT BENCHMARK
@@ -281,8 +281,8 @@ def render_analysis_view():
                 height=320,
                 margin=dict(l=30, r=30, t=50, b=40),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                plot_bgcolor="#FFFFFF",
-                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#0f172a",
+                paper_bgcolor="#0f172a",
             )
             st.plotly_chart(fig_p, use_container_width=True)
 
@@ -290,7 +290,7 @@ def render_analysis_view():
     # TAB 4: TECHNICAL OBSERVATIONS & INSIGHTS
     # -------------------------------------------------------------
     with tab_insights:
-        st.subheader("🔬 Synthesized Technical Observations & Algorithmic Trade-offs")
+        st.subheader(" Synthesized Technical Observations & Algorithmic Trade-offs")
         st.markdown(
             """
             ### 1. Process Scheduling Trade-offs
@@ -311,7 +311,7 @@ def render_analysis_view():
 
         st.divider()
         st.download_button(
-            "📥 Export CPU Benchmark Data (CSV)",
+            " Export CPU Benchmark Data (CSV)",
             comp_df.to_csv(index=False),
             file_name="cpu_benchmark_results.csv",
             mime="text/csv",

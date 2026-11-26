@@ -65,7 +65,7 @@ def render_history_view():
             with c_csv:
                 csv_data = export_simulation_runs_to_csv(runs)
                 st.download_button(
-                    "📥 Export Runs to CSV",
+                    " Export Runs to CSV",
                     data=csv_data,
                     file_name="os_sim_runs.csv",
                     mime="text/csv",
@@ -74,7 +74,7 @@ def render_history_view():
             with c_json:
                 json_data = export_simulation_runs_to_json(runs)
                 st.download_button(
-                    "📥 Export Runs to JSON",
+                    " Export Runs to JSON",
                     data=json_data,
                     file_name="os_sim_runs.json",
                     mime="application/json",
@@ -94,7 +94,7 @@ def render_history_view():
             with c_tcsv:
                 t_csv = export_telemetry_to_csv(snaps)
                 st.download_button(
-                    "📥 Export Telemetry to CSV",
+                    " Export Telemetry to CSV",
                     data=t_csv,
                     file_name="os_sim_telemetry.csv",
                     mime="text/csv",
@@ -103,7 +103,7 @@ def render_history_view():
             with c_tjson:
                 t_json = export_telemetry_to_json(snaps)
                 st.download_button(
-                    "📥 Export Telemetry to JSON",
+                    " Export Telemetry to JSON",
                     data=t_json,
                     file_name="os_sim_telemetry.json",
                     mime="application/json",
@@ -114,9 +114,9 @@ def render_history_view():
 
     with tab_maint:
         st.subheader("Database Maintenance")
-        st.warning("⚠️ Purging the database permanently deletes all saved runs and telemetry snapshots.")
+        st.warning(" Purging the database permanently deletes all saved runs and telemetry snapshots.")
 
-        if st.button("🗑️ Purge Database Records", type="secondary"):
+        if st.button(" Purge Database Records", type="secondary"):
             db_manager.clear_all()
             st.success("Database records successfully purged.")
             st.rerun()

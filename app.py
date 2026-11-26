@@ -23,7 +23,6 @@ from core.config import (
 from core.executor import BashExecutor
 
 # Import View Modules
-from dashboard.design_view import render_design_view
 from dashboard.cpu_view import render_cpu_view
 from dashboard.memory_view import render_memory_view
 from dashboard.paging_view import render_paging_view
@@ -31,187 +30,49 @@ from dashboard.disk_view import render_disk_view
 from dashboard.deadlock_view import render_deadlock_view
 from dashboard.system_view import render_system_view
 from dashboard.analysis_view import render_analysis_view
-from dashboard.reliability_view import render_reliability_view
-from dashboard.report_view import render_report_view
 from dashboard.history_view import render_history_view
 
 # Configure Streamlit page
 st.set_page_config(
     page_title=f"{APP_NAME} Workstation",
-    page_icon="⚙️",
+    page_icon="OS",
     layout=UI_LAYOUT,
     initial_sidebar_state=UI_INITIAL_SIDEBAR_STATE,
 )
 
-# Professional Precision Light-Mode Stylesheet
+# Dark workstation theme shared by every page.
 st.markdown(
     """
     <style>
-    /* Global Reset & Typography */
-    html, body, [data-testid="stAppViewContainer"] {
-        background-color: #FAFAFA !important;
-        color: #111827 !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    :root { color-scheme: dark; }
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMain"] {
+        background: #0b1120 !important; color: #e5e7eb !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
         -webkit-font-smoothing: antialiased;
     }
-
-    [data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #E5E7EB !important;
-    }
-
-    /* Headings */
-    h1 {
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-        color: #111827 !important;
-        letter-spacing: -0.025em !important;
-        margin-top: 0 !important;
-        margin-bottom: 0.5rem !important;
-    }
-    h2 {
-        font-size: 1.25rem !important;
-        font-weight: 600 !important;
-        color: #1F2937 !important;
-        letter-spacing: -0.02em !important;
-        margin-top: 1rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-    h3 {
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        color: #374151 !important;
-        margin-top: 0.75rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-
-    /* Top Workstation Bar */
-    .workstation-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 6px;
-        padding: 12px 20px;
-        margin-bottom: 20px;
-    }
-    .workstation-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #111827;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .workstation-meta {
-        font-size: 0.8rem;
-        color: #6B7280;
-        font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
-        display: flex;
-        gap: 16px;
-    }
-    .status-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
-    }
-    .status-tag-active {
-        background-color: #ECFDF5;
-        color: #065F46;
-        border: 1px solid #A7F3D0;
-    }
-    .status-tag-standby {
-        background-color: #EFF6FF;
-        color: #1E40AF;
-        border: 1px solid #BFDBFE;
-    }
-
-    /* Panels & Containers */
-    .stCard, .console-panel {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 6px;
-        padding: 16px;
-        margin-bottom: 16px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    }
-
-    /* Metric Boxes */
-    [data-testid="stMetric"] {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 6px;
-        padding: 12px 16px !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-    }
-    [data-testid="stMetricValue"] {
-        font-family: "SF Mono", "JetBrains Mono", Consolas, monospace !important;
-        font-size: 1.4rem !important;
-        font-weight: 700 !important;
-        color: #111827 !important;
-    }
-    [data-testid="stMetricLabel"] {
-        font-size: 0.75rem !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
-        color: #6B7280 !important;
-        font-weight: 600 !important;
-    }
-
-    /* Primary Buttons */
-    .stButton > button {
-        background-color: #1E40AF !important;
-        color: #FFFFFF !important;
-        border-radius: 5px !important;
-        border: 1px solid #1D4ED8 !important;
-        font-size: 0.85rem !important;
-        font-weight: 500 !important;
-        padding: 6px 14px !important;
-        transition: background-color 0.15s ease-in-out;
-    }
-    .stButton > button:hover {
-        background-color: #1D4ED8 !important;
-        border-color: #1E40AF !important;
-    }
-
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 4px;
-        border-bottom: 1px solid #E5E7EB;
-        padding-bottom: 0;
-    }
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 4px 4px 0 0;
-        padding: 8px 16px;
-        color: #4B5563;
-        font-size: 0.875rem;
-        font-weight: 500;
-        border: none;
-    }
-    .stTabs [aria-selected="true"] {
-        color: #1E40AF !important;
-        font-weight: 600 !important;
-        border-bottom: 2px solid #1E40AF !important;
-        background: transparent !important;
-    }
-
-    /* DataFrames & Tables */
-    [data-testid="stDataFrame"] {
-        border: 1px solid #E5E7EB;
-        border-radius: 4px;
-    }
-
-    /* Dividers */
-    hr {
-        margin: 1.25rem 0 !important;
-        border-color: #E5E7EB !important;
-    }
+    [data-testid="stSidebar"] { background: #0f172a !important; border-right: 1px solid #263248 !important; }
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p { color: #94a3b8; }
+    h1, h2, h3, h4 { color: #f1f5f9 !important; letter-spacing: -0.02em; }
+    p, li, label, [data-testid="stCaptionContainer"] { color: #cbd5e1; }
+    .workstation-header { display:flex; justify-content:space-between; align-items:center;
+        background:linear-gradient(120deg,#111c31,#101827); border:1px solid #263248;
+        border-radius:10px; padding:16px 20px; margin-bottom:20px; }
+    .workstation-title { font-size:1.1rem; font-weight:700; color:#f1f5f9; }
+    .workstation-meta { font-size:.8rem; color:#94a3b8; font-family:monospace; display:flex; gap:16px; }
+    .status-tag { display:inline-flex; padding:3px 9px; border-radius:999px; font-size:.75rem; font-family:monospace; }
+    .status-tag-active { background:#12352d; color:#6ee7b7; border:1px solid #1e5b48; }
+    .status-tag-standby { background:#312719; color:#fcd34d; border:1px solid #59421f; }
+    [data-testid="stMetric"] { background:#111827; border:1px solid #263248; border-radius:10px; padding:14px 16px !important; }
+    [data-testid="stMetricValue"] { font-family:monospace !important; font-size:1.4rem !important; font-weight:700 !important; color:#f1f5f9 !important; }
+    [data-testid="stMetricLabel"] { color:#94a3b8 !important; font-size:.75rem !important; text-transform:uppercase; letter-spacing:.05em; }
+    .stButton > button, [data-testid="stDownloadButton"] button { background:#2563eb !important; color:#fff !important; border:1px solid #3b82f6 !important; border-radius:7px !important; }
+    .stButton > button:hover, [data-testid="stDownloadButton"] button:hover { background:#1d4ed8 !important; }
+    .stTabs [data-baseweb="tab-list"] { gap:6px; border-bottom:1px solid #263248; }
+    .stTabs [data-baseweb="tab"] { color:#94a3b8; }
+    .stTabs [aria-selected="true"] { color:#93c5fd !important; border-bottom:2px solid #60a5fa !important; }
+    [data-testid="stDataFrame"], [data-testid="stTable"] { border:1px solid #263248; border-radius:8px; }
+    input, textarea, [data-baseweb="select"] > div { background:#111827 !important; color:#e5e7eb !important; }
+    hr { border-color:#263248 !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -222,11 +83,11 @@ def render_sidebar():
     """Renders application navigation and status in the sidebar."""
     st.sidebar.markdown(
         f"""
-        <div style="padding: 4px 0 16px 0; border-bottom: 1px solid #E5E7EB; margin-bottom: 16px;">
-            <div style="font-size: 1rem; font-weight: 700; color: #111827; letter-spacing: -0.01em;">
-                {APP_NAME} <span style="font-size: 0.75rem; font-weight: 500; color: #6B7280; font-family: monospace;">v{APP_VERSION}</span>
+        <div style="padding: 4px 0 16px 0; border-bottom: 1px solid #263248; margin-bottom: 16px;">
+            <div style="font-size: 1rem; font-weight: 700; color: #f1f5f9; letter-spacing: -0.01em;">
+                {APP_NAME} <span style="font-size: 0.75rem; font-weight: 500; color: #94a3b8; font-family: monospace;">v{APP_VERSION}</span>
             </div>
-            <div style="font-size: 0.75rem; color: #6B7280; margin-top: 2px;">
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">
                 OS Simulation & Telemetry Console
             </div>
         </div>
@@ -237,7 +98,7 @@ def render_sidebar():
     navigation = st.sidebar.radio(
         "Navigation",
         [
-            "Overview & Quick Launch",
+            "Overview",
             "CPU Scheduling",
             "Memory Management",
             "Page Replacement",
@@ -245,9 +106,6 @@ def render_sidebar():
             "Deadlock Management",
             "Host Telemetry (Bash)",
             "Benchmark Studio",
-            "Reliability & Test Suite",
-            "Architecture & Specs",
-            "Documentation & Traces",
             "Historical Database",
         ],
         index=0,
@@ -257,8 +115,8 @@ def render_sidebar():
     st.sidebar.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
     st.sidebar.markdown(
         """
-        <div style="border-top: 1px solid #E5E7EB; padding-top: 14px;">
-            <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #9CA3AF; margin-bottom: 8px;">
+        <div style="border-top: 1px solid #263248; padding-top: 14px;">
+            <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 8px;">
                 Environment
             </div>
         </div>
@@ -339,7 +197,7 @@ def render_overview():
 def main():
     selected_page = render_sidebar()
 
-    if selected_page == "Overview & Quick Launch":
+    if selected_page == "Overview":
         render_overview()
     elif selected_page == "CPU Scheduling":
         render_cpu_view()
@@ -355,12 +213,6 @@ def main():
         render_system_view()
     elif selected_page == "Benchmark Studio":
         render_analysis_view()
-    elif selected_page == "Reliability & Test Suite":
-        render_reliability_view()
-    elif selected_page == "Architecture & Specs":
-        render_design_view()
-    elif selected_page == "Documentation & Traces":
-        render_report_view()
     elif selected_page == "Historical Database":
         render_history_view()
 

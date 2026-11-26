@@ -116,7 +116,7 @@ def build_wfg_figure(processes: List[str], edges: List[Tuple[str, str]], deadloc
             arrowhead=3,
             arrowsize=1.5,
             arrowwidth=2,
-            arrowcolor="#EF4444" if (u in deadlocked and v in deadlocked) else "#6B7280",
+            arrowcolor="#EF4444" if (u in deadlocked and v in deadlocked) else "#94a3b8",
             opacity=0.85,
         )
 
@@ -133,13 +133,13 @@ def build_wfg_figure(processes: List[str], edges: List[Tuple[str, str]], deadloc
             mode="markers+text",
             text=processes,
             textposition="middle center",
-            textfont=dict(color="#FFFFFF", size=13, family="sans-serif"),
+            textfont=dict(color="#f8fafc", size=13, family="sans-serif"),
             hoverinfo="text",
             hovertext=hover_texts,
             marker=dict(
                 size=40,
                 color=node_colors,
-                line=dict(width=2, color="#111827"),
+                line=dict(width=2, color="#e2e8f0"),
             ),
         )
     )
@@ -152,7 +152,7 @@ def build_wfg_figure(processes: List[str], edges: List[Tuple[str, str]], deadloc
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4]),
         height=380,
         margin=dict(l=20, r=20, t=40, b=20),
-        plot_bgcolor="#F9FAFB",
+        plot_bgcolor="#0f172a",
     )
     return fig
 
@@ -212,14 +212,14 @@ def render_deadlock_view() -> None:
         safety_result = banker.check_safety()
         activity_logger.success("Deadlock", f"Checked Banker safety: safe={safety_result.is_safe}")
 
-        st.subheader("🚦 Safety Verification")
+        st.subheader(" Safety Verification")
         if safety_result.is_safe:
-            seq_display = " ➔ ".join([f"**{p}**" for p in safety_result.safe_sequence])
-            st.success(f"✅ **SAFE STATE**: System is safe from deadlock! Safe execution sequence: {seq_display}")
+            seq_display = "  ".join([f"**{p}**" for p in safety_result.safe_sequence])
+            st.success(f" **SAFE STATE**: System is safe from deadlock! Safe execution sequence: {seq_display}")
         else:
-            st.error(f"❌ **UNSAFE STATE**: {safety_result.message}")
+            st.error(f" **UNSAFE STATE**: {safety_result.message}")
 
-        with st.expander("📝 View Step-by-Step Safety Algorithm Execution Trace", expanded=True):
+        with st.expander(" View Step-by-Step Safety Algorithm Execution Trace", expanded=True):
             if safety_result.steps:
                 trace_rows = []
                 for s in safety_result.steps:
@@ -238,7 +238,7 @@ def render_deadlock_view() -> None:
                 st.warning("No process could satisfy its needs with the initial Available resources.")
 
         st.divider()
-        st.subheader("🎯 Interactive Resource-Request Evaluation")
+        st.subheader(" Interactive Resource-Request Evaluation")
         st.markdown(
             "Simulate a dynamic request from a running process to test whether the OS would grant it or force it to wait."
         )
@@ -264,14 +264,14 @@ def render_deadlock_view() -> None:
         if st.button("Evaluate Resource Request", type="primary"):
             req_res = banker.request_resources(req_process, req_inputs)
             if req_res.granted:
-                st.success(f"🎉 **Request GRANTED**: {req_res.reason}")
+                st.success(f" **Request GRANTED**: {req_res.reason}")
                 if req_res.safety_result:
                     st.info(f"Safe sequence post-allocation: <{', '.join(req_res.safety_result.safe_sequence)}>")
             else:
-                st.error(f"🚫 **Request REJECTED**: {req_res.reason}")
+                st.error(f" **Request REJECTED**: {req_res.reason}")
 
     with tab_detect:
-        st.subheader("🔍 Matrix Deadlock Detection & Wait-For Dependency Graph")
+        st.subheader(" Matrix Deadlock Detection & Wait-For Dependency Graph")
         st.markdown(
             "Identifies deadlocks in systems without advance resource claims by evaluating pending request matrices and cycle detection."
         )
@@ -301,12 +301,12 @@ def render_deadlock_view() -> None:
         st.divider()
         if det_result.has_deadlock:
             deadlocked_str = ", ".join([f"**{p}**" for p in det_result.deadlocked_processes])
-            st.error(f"🚨 **DEADLOCK DETECTED!** Deadlocked processes: {deadlocked_str}")
+            st.error(f" **DEADLOCK DETECTED!** Deadlocked processes: {deadlocked_str}")
             if det_result.cycles:
-                cycles_str = " | ".join([" ➔ ".join(c) for c in det_result.cycles])
-                st.warning(f"🔄 **Culprit Dependency Cycle(s)**: {cycles_str}")
+                cycles_str = " | ".join(["  ".join(c) for c in det_result.cycles])
+                st.warning(f" **Culprit Dependency Cycle(s)**: {cycles_str}")
         else:
-            st.success("✅ **NO DEADLOCK DETECTED**: All processes can successfully complete.")
+            st.success(" **NO DEADLOCK DETECTED**: All processes can successfully complete.")
 
         c_graph, c_info = st.columns([1.4, 1])
         with c_graph:
